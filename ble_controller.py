@@ -65,7 +65,7 @@ def read_temperature_from_sensortag(tool):
 
 def read_humidility_from_sensortag(tool):
 
-	tool.sendline('char-read-hnd 0x38')
+	tool.sendline('char-read-hnd 0x3b')
 	tool.expect('descriptor: .*')
 
 	rval = tool.after.split()
@@ -73,7 +73,7 @@ def read_humidility_from_sensortag(tool):
 	rawH = floatfromhex(rval[4] + rval[3])
 	(t, rh) = calcHum(rawT, rawH)
 
-	return rh
+	return rh*-1
 
 def open_the_window(tool):
 	print 'open the window'
@@ -101,7 +101,7 @@ def main():
 	tool.sendline('char-write-cmd 0x29 01')
 	tool.expect('\[LE\]>')
 
-	tool.sendline('char-write-cmd 0x3c 01')
+	tool.sendline('char-write-cmd 0x3f 01')
 	tool.expect('\[LE\]>')
 
 	print 'sensorTag connect success'
