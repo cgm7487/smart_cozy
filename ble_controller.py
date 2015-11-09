@@ -161,16 +161,19 @@ def main():
 			if isok:
 				windowStat = response[0][1]
 
-				fd = open('train.csv', 'ab')
-				csvFileObj = csv.writer(fd)
-				if windowStat == 1:
-					adjVal = (indoorComfortIndex - 1) if (indoorComfortIndex - 1) > 0 else 0
-					csvFileObj.writerow([float(tempVal), float(rh), float(0), adjVal])
-				else:
-					adjVal = (indoorComfortIndex + 1) if (indoorComfortIndex + 1) < 5 else 5
-					csvFileObj.writerow([float(tempVal), float(rh), float(0), adjVal])
+				if windowStat != preWindowStat:
 
-				fd.close()
+					fd = open('train.csv', 'ab')
+					csvFileObj = csv.writer(fd)
+
+					if windowStat == 1:
+						adjVal = (indoorComfortIndex - 1) if (indoorComfortIndex - 1) > 0 else 0
+						csvFileObj.writerow([float(tempVal), float(rh), float(0), adjVal])
+					else:
+						adjVal = (indoorComfortIndex + 1) if (indoorComfortIndex + 1) < 5 else 5
+						csvFileObj.writerow([float(tempVal), float(rh), float(0), adjVal])
+
+					fd.close()
 
 		else:
 			if indoorComfortIndex > 3:

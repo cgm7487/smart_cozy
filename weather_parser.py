@@ -116,8 +116,8 @@ class naunnanWeather:
         oc.write(self.CIK, {"alias": "outdoor_windspeed"}, self.windSpeed)
         oc.write(self.CIK, {"alias": "outdoor_curTemp"}, self.curTemp)
         oc.write(self.CIK, {"alias": "outdoor_preTemp"}, self.preTemp)
-        oc.write(self.CIK, {"alias": "outdoor_curHumidity"}, self.curHum)
-        oc.write(self.CIK, {"alias": "outdoor_preHumidity"}, self.preHum)
+        oc.write(self.CIK, {"alias": "outdoor_curHumidity"}, self.curHum.strip('%'))
+        oc.write(self.CIK, {"alias": "outdoor_preHumidity"}, self.preHum.strip('%'))
         oc.write(self.CIK, {"alias": "outdoor_curStat"}, self.curStat)
         oc.write(self.CIK, {"alias": "outdoor_preStat"}, self.preStat)
 
