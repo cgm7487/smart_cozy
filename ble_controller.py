@@ -100,6 +100,10 @@ def main():
 	tool.expect('Connection successful')
 	tool.sendline('char-write-cmd 0x29 01')
 	tool.expect('\[LE\]>')
+
+	tool.sendline('char-write-cmd 0x3c 01')
+	tool.expect('\[LE\]>')
+
 	print 'sensorTag connect success'
 
 	tool2 = pexpect.spawn('gatttool -b ' + motorAddr + ' --interactive')
