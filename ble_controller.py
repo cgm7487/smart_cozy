@@ -73,7 +73,9 @@ def read_humidility_from_sensortag(tool):
 	rawH = floatfromhex(rval[4] + rval[3])
 	(t, rh) = calcHum(rawT, rawH)
 
-	return rh*-1
+	rh = rh if rh > 0 else rh * -1
+
+	return rh
 
 def open_the_window(tool):
 	print 'open the window'
