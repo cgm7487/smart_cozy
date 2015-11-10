@@ -106,8 +106,8 @@ class BleController:
 
 	def connectToDevice(self):
 
-		sensorTagAddr = sys.argv[1]
-		motorAddr = sys.argv[2]
+		sensorTagAddr = sys.argv[2]
+		motorAddr = sys.argv[3]
 
 		self.tool = pexpect.spawn('gatttool -b ' + sensorTagAddr + ' --interactive')
 		self.tool.expect('\[LE\]>')
@@ -132,8 +132,8 @@ class BleController:
 
 		while True:
 			time.sleep(1)
-			tempVal = read_temperature_from_sensortag(tool)
-			rh = read_humidility_from_sensortag(tool)
+			tempVal = read_temperature_from_sensortag(self.tool)
+			rh = read_humidility_from_sensortag(self.tool)
 
 			print 'indoor temperature = %f' % tempVal
 			print 'indoor humilidity = %f' % rh
@@ -199,9 +199,9 @@ class BleController:
 			if self.windowStat != self.preWindowStat:
 				print 'try to control window'
 				if self.windowStat > 0:
-					close_the_window(tool2)
+					close_the_window(self.tool2)
 				else:
-					open_the_window(tool2)
+					open_the_window(self.tool2)
 				self.preWindowStat = self.windowStat
 
 
