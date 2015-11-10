@@ -110,14 +110,10 @@ class BleController:
 		self.tool = pexpect.spawn('gatttool -b ' + sensorTagAddr + ' --interactive')
 		self.tool.expect('\[LE\]>')
 
-		self.tool2 = pexpect.spawn('gatttool -b ' + motorAddr + ' --interactive')
-		self.tool2.expect('\[LE\]>')
-
-	def connectToDevice(self):
-
 		print "Preparing to connect. You might need to press the side button..."
 		self.tool.sendline('connect')
 		self.tool.expect('Connection successful')
+
 		self.tool.sendline('char-write-cmd 0x29 01')
 		self.tool.expect('\[LE\]>')
 
@@ -125,6 +121,9 @@ class BleController:
 		self.tool.expect('\[LE\]>')
 
 		print 'sensorTag connect success'
+
+		self.tool2 = pexpect.spawn('gatttool -b ' + motorAddr + ' --interactive')
+		self.tool2.expect('\[LE\]>')
 
 		self.tool2.sendline('connect')
 		self.tool2.expect('Connection successful')
@@ -208,7 +207,6 @@ class BleController:
 
 
 bleController = BleController()
-bleController.connectToDevice()
 daemonRunner = runner.DaemonRunner(bleController)
 daemonRunner.do_action()
 
