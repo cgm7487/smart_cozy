@@ -215,6 +215,11 @@ class BleController:
 					open_the_window(self.tool2)
 				self.preWindowStat = self.windowStat
 
+			onepInst.write(cik,
+				{"alias": "current_window_status"},
+				self.windowStat,
+				{})
+
 
 if __name__ == '__main__':
 	bleController = BleController()
