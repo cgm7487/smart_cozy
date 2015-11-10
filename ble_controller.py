@@ -152,13 +152,11 @@ def main():
 			manualTrigger = response[0][1]
 		else:
 			manualTrigger = 0
-
-		isok, response = onepInst.read(cik, {'alias': 'indoor_comfort_index'}, {'limit': 1, 'sort': 'desc', 'selection': 'all'})
-
-		if isok:
-			indoorComfortIndex = response[0][1]
-		else:
-			continue
+			isok, response = onepInst.read(cik, {'alias': 'indoor_comfort_index'}, {'limit': 1, 'sort': 'desc', 'selection': 'all'})
+			if isok:
+				indoorComfortIndex = response[0][1]
+			else:
+				continue
 
  		print 'comfortable index = %f' % indoorComfortIndex
 
