@@ -104,13 +104,17 @@ class BleController:
 		self.cik = 'c7daa5a76badd48e8b8a7b71560670f66ba23c4b'
 		self.indoorComfortIndex = 3
 
-	def connectToDevice(self):
-
 		sensorTagAddr = sys.argv[2]
 		motorAddr = sys.argv[3]
 
 		self.tool = pexpect.spawn('gatttool -b ' + sensorTagAddr + ' --interactive')
 		self.tool.expect('\[LE\]>')
+
+		self.tool2 = pexpect.spawn('gatttool -b ' + motorAddr + ' --interactive')
+		self.tool2.expect('\[LE\]>')
+
+	def connectToDevice(self):
+
 		print "Preparing to connect. You might need to press the side button..."
 		self.tool.sendline('connect')
 		self.tool.expect('Connection successful')
@@ -122,8 +126,6 @@ class BleController:
 
 		print 'sensorTag connect success'
 
-		self.tool2 = pexpect.spawn('gatttool -b ' + motorAddr + ' --interactive')
-		self.tool2.expect('\[LE\]>')
 		self.tool2.sendline('connect')
 		self.tool2.expect('Connection successful')
 		print 'motor connect success'
