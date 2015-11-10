@@ -2,15 +2,22 @@
 
 # Gene Cheng(cgm). Nov. 2015
 
+import os
 import csv as csv
 import numpy as np
+import sys
 import time
+
 from sklearn.naive_bayes import GaussianNB
 from daemon import runner
-
+from lockfile import LockFile
 from pyonep import onep
 
 def start_to_learn(clf):
+
+	lock = LockFile('tmp/lockfile')
+	lock.acquire()
+
 	csvFileObj = csv.reader(open(('train.csv'), 'rb'))
 	data = []
 	for row in csvFileObj:
@@ -25,12 +32,16 @@ def start_to_learn(clf):
 	clf.fit(trainingData, labelData)
 	print 'learning finished'
 
+	lock.release()
+
 class LearningEngine():
 	def __init__(self):
+
 		self.stdin_path = '/dev/null'
 		self.stdout_path = '/dev/tty'
 		self.stderr_path = '/dev/tty'
 		self.pidfile_path = '/tmp/learnEnging.pid'
+		self.default_path = os.path.dirname(os.path.abspath(sys.argv[0]))
 		self.pidfile_timeout = 5
 
 		self.clf = GaussianNB()
@@ -45,7 +56,12 @@ class LearningEngine():
 
 	def run(self):
 
+		os.chdir(self.default_path)
+
 		while True:
+
+			print 'thread start'
+
 			self.learnCnt += 1
 
 			if self.learnCnt == 10:
@@ -108,8 +124,9 @@ class LearningEngine():
 
 			time.sleep(10)
 
-learningEngine = LearningEngine()
-daemonRunner = runner.DaemonRunner(learningEngine)
-daemonRunner.do_action()
+if __name__ == '__main__':
+	learningEngine = LearningEngine()
+	daemonRunner = runner.DaemonRunner(learningEngine)
+	daemonRunner.do_action()
 
 

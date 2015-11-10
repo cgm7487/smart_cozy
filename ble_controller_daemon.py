@@ -3,6 +3,7 @@
 # Gene Cheng(cgm). Nov. 2015
 # This application uses some functions from the https://github.com/msaunby/ble-sensor-pi
 
+import os
 import pexpect
 import sys
 import time
@@ -10,8 +11,8 @@ import time
 import csv as csv
 
 from daemon import runner
-
 from pyonep import onep
+from lockfile import LockFile
 
 def floatfromhex(h):
 	t = float.fromhex(h)
@@ -97,6 +98,7 @@ class BleController:
 		self.stdout_path = '/dev/tty'
 		self.stderr_path = '/dev/tty'
 		self.pidfile_path = '/tmp/bleController.pid'
+		self.default_path = os.path.dirname(os.path.abspath(sys.argv[0]))
 		self.pidfile_timeout = 5
 
 		self.onepInst = onep.OnepV1()
@@ -105,6 +107,8 @@ class BleController:
 		self.indoorComfortIndex = 3
 
 	def run(self):
+
+		os.chdir(self.default_path)
 
 		sensorTagAddr = sys.argv[2]
 		motorAddr = sys.argv[3]
@@ -170,6 +174,9 @@ class BleController:
 
 					if self.windowStat != self.preWindowStat:
 
+						lock = LockFile('tmp/lockfile')
+						lock.acquire()
+
 						fd = open('train.csv', 'ab')
 						csvFileObj = csv.writer(fd)
 
@@ -181,6 +188,8 @@ class BleController:
 							csvFileObj.writerow([float(tempVal), float(rh), float(0), adjVal])
 
 						fd.close()
+
+						lock.release()
 
 			else:
 				if self.indoorComfortIndex > 3:
@@ -207,8 +216,9 @@ class BleController:
 				self.preWindowStat = self.windowStat
 
 
-bleController = BleController()
-daemonRunner = runner.DaemonRunner(bleController)
-daemonRunner.do_action()
+if __name__ == '__main__':
+	bleController = BleController()
+	daemonRunner = runner.DaemonRunner(bleController)
+	daemonRunner.do_action()
 
 

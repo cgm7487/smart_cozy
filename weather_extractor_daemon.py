@@ -138,7 +138,7 @@ class DataExtractor:
             self.nw.updateWeatherDataToCloud()
             time.sleep(60)
 		
-		
-dataExtractor = DataExtractor()
-daemonRunner = runner.DaemonRunner(dataExtractor)
-daemonRunner.do_action()
+if __name__ == '__main__':
+	dataExtractor = DataExtractor()
+	daemonRunner = runner.DaemonRunner(dataExtractor)
+	daemonRunner.do_action()
