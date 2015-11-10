@@ -104,6 +104,8 @@ class BleController:
 		self.cik = 'c7daa5a76badd48e8b8a7b71560670f66ba23c4b'
 		self.indoorComfortIndex = 3
 
+	def run(self):
+
 		sensorTagAddr = sys.argv[2]
 		motorAddr = sys.argv[3]
 
@@ -127,9 +129,8 @@ class BleController:
 
 		self.tool2.sendline('connect')
 		self.tool2.expect('Connection successful')
-		print 'motor connect success'
 
-	def run(self):
+		print 'motor connect success'
 
 		while True:
 			time.sleep(1)
