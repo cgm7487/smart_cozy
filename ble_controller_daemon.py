@@ -106,7 +106,7 @@ class BleController:
 
 	def connectToDevice(self):
 
-        sensorTagAddr = sys.argv[1]
+		sensorTagAddr = sys.argv[1]
 		motorAddr = sys.argv[2]
 
 		self.tool = pexpect.spawn('gatttool -b ' + sensorTagAddr + ' --interactive')
