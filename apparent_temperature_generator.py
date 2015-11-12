@@ -20,7 +20,7 @@ def main():
 				appTemp = calc_apparent_temp(i, j, k)
 				if appTemp > 35.0:
 					label = 5
-				elif appTemp > 25.0:
+				elif appTemp > 26.0:
 					label = 4
 				elif appTemp > 20.0:
 					label = 3
