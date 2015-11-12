@@ -122,7 +122,7 @@ class LearningEngine():
 					{})
 				break
 
-			time.sleep(10)
+			time.sleep(30)
 
 if __name__ == '__main__':
 	learningEngine = LearningEngine()
