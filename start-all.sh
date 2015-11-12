@@ -1,12 +1,22 @@
 #!/bin/sh
 
+TRAIN_FILE="train.csv"
+
 sudo hciconfig hci0 up
 
 
 if [ $? -ne 0 ]; then
 	echo "bluetooth interface error"
 	exit 1
-fi 
+fi
+
+if [ -e $TRAIN_FILE ]; then
+	echo $TRAIN_FILE exists
+else
+	echo $TRAIN_FILE does not exist, generate a new one
+	python apparent_temperature_generator.py
+fi
+
 
 python ble_controller_daemon.py start 34:B1:F7:D1:47:D5 00:15:83:00:77:2D &
 
