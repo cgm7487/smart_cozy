@@ -159,11 +159,11 @@ class BleController:
 				manualTrigger = response[0][1]
 			else:
 				manualTrigger = 0
-				isok, response = self.onepInst.read(self.cik, {'alias': 'indoor_comfort_index'}, {'limit': 1, 'sort': 'desc', 'selection': 'all'})
-				if isok:
-					self.indoorComfortIndex = response[0][1]
-				else:
-					continue
+
+			isok, response = self.onepInst.read(self.cik, {'alias': 'indoor_comfort_index'}, {'limit': 1, 'sort': 'desc', 'selection': 'all'})
+
+			if isok:
+				self.indoorComfortIndex = response[0][1]
 
 	 		print 'comfortable index = %f' % self.indoorComfortIndex
 
