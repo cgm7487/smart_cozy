@@ -45,7 +45,8 @@ def calcTmpTarget(objT, ambT):
 	tObj = pow(pow(Tdie2,4) + (fObj/S),.25)
 	tObj = (tObj - 273.15)
 	print "%.2f C" % tObj
-	return tObj
+	#return tObj
+	return m_tmpAmb
 
 def calcHum(rawT, rawH):
     # -- calculate temperature [deg C] --
@@ -202,7 +203,7 @@ class BleController:
 			isok, response = self.onepInst.read(self.cik, {'alias': 'outdoor_pm25'}, {'limit': 1, 'sort': 'desc', 'selection': 'all'})
 			if isok:
 				pm25 = response[0][1]
-				if pm25 > 70:
+				if pm25 > 70 and manualTrigger != 1:
 					self.windowStat = 1
 
 			print 'window status = %d' % self.windowStat
