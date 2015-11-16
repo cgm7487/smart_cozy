@@ -14,6 +14,8 @@ from daemon import runner
 from pyonep import onep
 from lockfile import LockFile
 
+TIMEOUT_SEC = 10
+
 def floatfromhex(h):
 	t = float.fromhex(h)
 	if t > float.fromhex('7FFF'):
@@ -27,6 +29,7 @@ def floatfromhex(h):
 # which most likely took it from the datasheet.  I've not checked it, other
 # than noted that the temperature values I got seemed reasonable.
 #
+
 def calcTmpTarget(objT, ambT):
 	m_tmpAmb = ambT/128.0
 	Vobj2 = objT * 0.00000015625
@@ -93,6 +96,31 @@ def close_the_window(tool):
 	time.sleep(1)
 	tool.sendline('char-write-cmd 0x0025 ff')
 
+def connect_to_device(bleController, sensorTagAddr, motorAddr):
+	bleController.tool = pexpect.spawn('gatttool -b ' + sensorTagAddr + ' --interactive')
+	bleController.tool.expect('\[LE\]>')
+
+	print "Preparing to connect. You might need to press the side button..."
+	bleController.tool.sendline('connect')
+	bleController.tool.expect('Connection successful')
+
+	bleController.tool.sendline('char-write-cmd 0x29 01')
+	bleController.tool.expect('\[LE\]>')
+
+	bleController.tool.sendline('char-write-cmd 0x3f 01')
+	bleController.tool.expect('\[LE\]>')
+
+	print 'sensorTag connect success'
+
+	bleController.tool2 = pexpect.spawn('gatttool -b ' + motorAddr + ' --interactive')
+	bleController.tool2.expect('\[LE\]>')
+
+	bleController.tool2.sendline('connect')
+	bleController.tool2.expect('Connection successful')
+
+	print 'motor connect success'
+	
+
 class BleController:
 	def __init__(self):
 		self.stdin_path = '/dev/null'
@@ -114,33 +142,31 @@ class BleController:
 		sensorTagAddr = sys.argv[2]
 		motorAddr = sys.argv[3]
 
-		self.tool = pexpect.spawn('gatttool -b ' + sensorTagAddr + ' --interactive')
-		self.tool.expect('\[LE\]>')
+		isOut = False
 
-		print "Preparing to connect. You might need to press the side button..."
-		self.tool.sendline('connect')
-		self.tool.expect('Connection successful')
-
-		self.tool.sendline('char-write-cmd 0x29 01')
-		self.tool.expect('\[LE\]>')
-
-		self.tool.sendline('char-write-cmd 0x3f 01')
-		self.tool.expect('\[LE\]>')
-
-		print 'sensorTag connect success'
-
-		self.tool2 = pexpect.spawn('gatttool -b ' + motorAddr + ' --interactive')
-		self.tool2.expect('\[LE\]>')
-
-		self.tool2.sendline('connect')
-		self.tool2.expect('Connection successful')
-
-		print 'motor connect success'
+		while not isOut:
+			try:
+				connect_to_device(self, sensorTagAddr, motorAddr)
+				isOut = True
+			except pexpect.TIMEOUT:
+				print 'connect device failed'
 
 		while True:
 			time.sleep(1)
-			tempVal = read_temperature_from_sensortag(self.tool)
-			rh = read_humidility_from_sensortag(self.tool)
+
+			isOut = False
+			while not isOut:
+				try:
+					tempVal = read_temperature_from_sensortag(self.tool)
+					rh = read_humidility_from_sensortag(self.tool)
+					isOut = True
+				except pexpect.TIMEOUT:
+					print 'read sensor faled'
+					isOut = False
+					try:
+						connect_to_device(self, sensorTagAddr, motorAddr)
+					except pexpect.TIMEOUT:
+						print 'connect device failed'
 
 			print 'indoor temperature = %f' % tempVal
 			print 'indoor humilidity = %f' % rh
